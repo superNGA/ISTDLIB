@@ -16,6 +16,7 @@
 #include <stdbool.h>
 
 #include "Assertion.h"
+#include "Vector.h"
 
 
 #define nullptr        ((void*)0)
