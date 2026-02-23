@@ -14,10 +14,12 @@
 #include <stdlib.h>
 
 
-#define ENABLE_ASSERTIONS true
+#ifndef ENABLE_ASSERTIONS
+#define ENABLE_ASSERTIONS 1
+#endif
 
 
-#if (ENABLE_ASSERTIONS == true)
+#if (ENABLE_ASSERTIONS == 1)
 #define assertion(expression) { if((expression) == false) Assertion(#expression, __FILE__, __LINE__); }
 #elif
 #define assertion(expression) 
