@@ -48,7 +48,7 @@ Header holds metadata about this Vector, like size, capacity n stuff.
 
 
 /* returns zero if vector is empty, else non-zero value. */
-#define Vector_Empty(Container) Vector_Len(Container)
+#define Vector_Empty(Container) (Vector_Len(Container) == 0 ? true : false)
 
 
 /* returns pointer to last element in the vector. Make sure vector is valid and not empty. */
@@ -100,7 +100,7 @@ Header holds metadata about this Vector, like size, capacity n stuff.
         Vector_VerifyRequest((void**)&Container, sizeof(*Container), 0, false);  \
         free(Vector_GetHeader(Container));                                       \
     }                                                                            \
-    Container = nullptr;                                                         \
+    Container = NULL;                                                            \
 } while(0)
 
 
