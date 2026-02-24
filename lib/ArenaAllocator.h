@@ -19,8 +19,9 @@
 #include "Vector.h"
 
 
-#define nullptr        ((void*)0)
-#define STD_ARENA_SIZE (1024 * 4)
+#define nullptr                    ((void*)0)
+#define STD_ARENA_SIZE             (1024 * 4)
+#define STD_ARENA_MEMORY_ALIGNMENT (16)
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -127,16 +128,38 @@ static bool Arena_Initialize(Arena_t* pArena, uint32_t iArenaSize)
 ///////////////////////////////////////////////////////////////////////////
 static void* Arena_Allocate(Arena_t* pArena, size_t nBytes)
 {
-    uint32_t iCapacity = pArena->m_iSize - pArena->m_iUsedTill; // Bytes left.
+    assertion(STD_ARENA_MEMORY_ALIGNMENT >= 0 && "Invalid alignment. Use 0 for no alignment.");
 
+
+    size_t iPointer        = (size_t)pArena->m_pMemory + (size_t)pArena->m_iUsedTill;
+    size_t iAlignment      = STD_ARENA_MEMORY_ALIGNMENT;
+    size_t iAlignedPointer = iPointer;
+
+    
+    // Align memory.
+    if(iAlignment > 0)
+        iAlignedPointer = ((iPointer + (iAlignment - 1)) / iAlignment) * iAlignment;
+
+    
+    // Bytes used according to aligned memory.
+    assertion(iAlignedPointer >= (size_t)pArena->m_pMemory && "Skill issues detected.");
+    size_t iBytesUsedAligned = iAlignedPointer - (size_t)pArena->m_pMemory;
+
+
+    // We have enough capacity according to aligned memory ?
+    int64_t iCapacity = (int64_t)pArena->m_iSize - (int64_t)iBytesUsedAligned;
     if(nBytes > iCapacity)
         return nullptr;
 
-    void* pOutput = (void*)((uintptr_t)pArena->m_pMemory + (uintptr_t)pArena->m_iUsedTill);
-    
-    pArena->m_iUsedTill += nBytes;
 
-    return pOutput;
+    assertion(
+            iAlignedPointer >= (size_t)pArena->m_pMemory && 
+            iAlignedPointer <  (size_t)pArena->m_pMemory + (size_t)pArena->m_iSize && 
+            "Invalid aligned pointer");
+
+    pArena->m_iUsedTill = iBytesUsedAligned + nBytes;
+
+    return (void*)iAlignedPointer;
 }
 
 

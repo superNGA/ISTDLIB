@@ -2,8 +2,21 @@
 #include "../lib/ArenaAllocator.h"
 
 
-
 static void TestArena();
+
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+static void CapacityPerArena(ArenaAllocator_t* pAA)
+{
+    for(int i = 0; i < Vector_Len(pAA->m_pArenas); i++)
+    {
+        size_t iUsed = Arena_GetSize(&pAA->m_pArenas[i]);
+        size_t iCapacity = Arena_Capacity(&pAA->m_pArenas[i]);
+        printf("Arena %d is filled %.2f used %zu / %zu bytes\n", i, (double)iUsed / (double)iCapacity, iUsed, iCapacity);
+    }
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -11,7 +24,7 @@ static void TestArena();
 int main(int nArgs, char** szArgs)
 {
     ArenaAllocator_t arenaAlloc;
-    if(ArenaAllocator_Initalize(&arenaAlloc, 2, 10) == false)
+    if(ArenaAllocator_Initialize(&arenaAlloc, 2, 1000) == false)
         return 1;
 
 
@@ -27,6 +40,8 @@ int main(int nArgs, char** szArgs)
     printf("size : %zu, capacity : %zu, Arena Count : %zu\n", 
             ArenaAllocator_SizeAll(&arenaAlloc), ArenaAllocator_Capacity(&arenaAlloc),
             ArenaAllocator_ArenaCount(&arenaAlloc));
+
+    CapacityPerArena(&arenaAlloc);
 
     ArenaAllocator_Clear(&arenaAlloc);
 
