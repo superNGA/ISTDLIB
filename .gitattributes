@@ -1,0 +1,2 @@
+# force ALL .h files
+*.h linguist-language=C
