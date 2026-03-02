@@ -1,13 +1,13 @@
 //=========================================================================
-//                      Vector
+//                      ILIB Vector
 //=========================================================================
 // by      : INSANE
 // created : 22/02/2026
 //
 // purpose : std::vector<> rip-off in C. Inspired by nothings/stb_ds.h
 //-------------------------------------------------------------------------
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef ILIB_VECTOR_H
+#define ILIB_VECTOR_H
 
 
 #include <stdint.h>

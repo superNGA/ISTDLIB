@@ -1,13 +1,13 @@
 //=========================================================================
-//                      Assertion
+//                     ILIB Assertion
 //=========================================================================
 // by      : INSANE
 // created : 22/02/2026
 //
 // purpose : assertion.h rip-off so we have assertions in release mode.
 //-------------------------------------------------------------------------
-#ifndef ASSERTION_H
-#define ASSERTION_H
+#ifndef ILIB_ASSERTION_H
+#define ILIB_ASSERTION_H
 
 
 #include <stdio.h>

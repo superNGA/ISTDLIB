@@ -1,13 +1,13 @@
 //=========================================================================
-//                      Arena Allocator
+//                      ILIB Arena Allocator
 //=========================================================================
 // by      : INSANE
 // created : 22/02/2026
 //
 // purpose : Simple Arena Allocator in C.
 //-------------------------------------------------------------------------
-#ifndef ARENA_ALLOCATOR_H
-#define ARENA_ALLOCATOR_H
+#ifndef ILIB_ARENA_ALLOCATOR_H
+#define ILIB_ARENA_ALLOCATOR_H
 
 
 
