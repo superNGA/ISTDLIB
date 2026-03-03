@@ -36,15 +36,15 @@ Header holds metadata about this Vector, like size, capacity n stuff.
 
 
 /* Get VectorHeader_t pointer from given vector. */
-#define Vector_GetHeader(Container) (&((VectorHeader_t*)Container)[-1])
+#define Vector_GetHeader(Container) (&((VectorHeader_t*)(Container))[-1])
 
 
 /* Index of the last stored element + 1. Zero in case no elements. */
-#define Vector_Len(Container) (Container == nullptr ? 0 : Vector_GetHeader(Container)->m_iSize)
+#define Vector_Len(Container) (( Container ) == nullptr ? 0 : Vector_GetHeader(Container)->m_iSize)
 
 
 /* Gets vector's capacity, i.e. number of elements that it can hold. */
-#define Vector_Capacity(Container) (Container == nullptr ? 0 : Vector_GetHeader(Container)->m_iCapacity)
+#define Vector_Capacity(Container) (( Container ) == nullptr ? 0 : Vector_GetHeader(Container)->m_iCapacity)
 
 
 /* returns zero if vector is empty, else non-zero value. */
@@ -52,98 +52,98 @@ Header holds metadata about this Vector, like size, capacity n stuff.
 
 
 /* returns pointer to last element in the vector. Make sure vector is valid and not empty. */
-#define Vector_Back(Container) (&Container[Vector_Len(Container) - 1])
+#define Vector_Back(Container) (&( Container )[Vector_Len(Container) - 1])
 
 
 /* returns pointer to first element in the vector. Make sure vector is valid and not empty. */
-#define Vector_Front(Container) (&Container[0])
+#define Vector_Front(Container) (&( Container )[0])
 
 
 /* Insert element at any index. */
-#define Vector_Insert(Container, Index, Data) do{                                           \
-    Vector_AssertInit((void**)&Container, sizeof(*Container));                              \
-    int             iIndex       = (Index);                                                 \
-    VectorHeader_t* pHeader      = Vector_GetHeader(Container);                             \
-    int             iAssertIndex = iIndex > pHeader->m_iSize ? iIndex : pHeader->m_iSize;   \
-    Vector_MayGrowToIndex((void**)&Container, sizeof(*Container), iAssertIndex);            \
-    Vector_VerifyRequest ((void**)&Container, sizeof(*Container), iIndex, true);            \
-    uintptr_t pData     = ((uintptr_t)(Container));                                         \
-    pHeader             = Vector_GetHeader(Container);                                      \
-    uintptr_t pMoveAdrs = pData + (sizeof(*Container) * (uintptr_t)iIndex);                 \
-    if(iIndex < pHeader->m_iSize)                                                           \
-        memmove((void*)(pMoveAdrs + sizeof(*Container)), ((void*)pMoveAdrs),                \
-                (pHeader->m_iSize - iIndex) * sizeof(*Container));                          \
-    Container[iIndex] = (Data);                                                             \
-    pHeader->m_iSize  = iIndex <= pHeader->m_iSize ? pHeader->m_iSize + 1 : iIndex + 1;     \
+#define Vector_Insert(Container, Index, Data) do{                                               \
+    Vector_AssertInit((void**)&(Container), sizeof(*(Container)));                              \
+    int             iIndex       = (Index);                                                     \
+    VectorHeader_t* pHeader      = Vector_GetHeader((Container));                               \
+    int             iAssertIndex = iIndex > pHeader->m_iSize ? iIndex : pHeader->m_iSize;       \
+    Vector_MayGrowToIndex((void**)&(Container), sizeof(*(Container)), iAssertIndex);            \
+    Vector_VerifyRequest ((void**)&(Container), sizeof(*(Container)), iIndex, true);            \
+    uintptr_t pData     = ((uintptr_t)((Container)));                                           \
+    pHeader             = Vector_GetHeader((Container));                                        \
+    uintptr_t pMoveAdrs = pData + (sizeof(*(Container)) * (uintptr_t)iIndex);                   \
+    if(iIndex < pHeader->m_iSize)                                                               \
+        memmove((void*)(pMoveAdrs + sizeof(*(Container))), ((void*)pMoveAdrs),                  \
+                (pHeader->m_iSize - iIndex) * sizeof(*(Container)));                            \
+    (Container)[iIndex] = (Data);                                                               \
+    pHeader->m_iSize  = iIndex <= pHeader->m_iSize ? pHeader->m_iSize + 1 : iIndex + 1;         \
 } while(0)
 
 
 /* Erase element at any index. */
-#define Vector_Erase(Container, Index) do{                                                        \
-    Vector_AssertInit   ((void**)&Container, sizeof(*Container));                                 \
-    Vector_VerifyRequest((void**)&Container, sizeof(*Container), (Index), true);                  \
-    int             iIndex    = (Index);                                                          \
-    VectorHeader_t* pHeader   = Vector_GetHeader(Container);                                      \
-    uintptr_t       pMoveAdrs = (uintptr_t)Container + (sizeof(*Container) * (uintptr_t)iIndex);  \
-    assertion(pHeader->m_iSize > 0      && "Empty vector");                                       \
-    assertion(iIndex < pHeader->m_iSize && "Trying to erase out of bound entry");                 \
-    memmove((void*)(pMoveAdrs), (void*)(pMoveAdrs + sizeof(*Container)),                          \
-            (pHeader->m_iSize - iIndex - 1) * sizeof(*Container));                                \
-    pHeader->m_iSize -= 1;                                                                        \
+#define Vector_Erase(Container, Index) do{                                                            \
+    Vector_AssertInit   ((void**)&(Container), sizeof(*(Container)));                                 \
+    Vector_VerifyRequest((void**)&(Container), sizeof(*(Container)), (Index), true);                  \
+    int             iIndex    = (Index);                                                              \
+    VectorHeader_t* pHeader   = Vector_GetHeader((Container));                                        \
+    uintptr_t       pMoveAdrs = (uintptr_t)(Container) + (sizeof(*(Container)) * (uintptr_t)iIndex);  \
+    assertion(pHeader->m_iSize > 0      && "Empty vector");                                           \
+    assertion(iIndex < pHeader->m_iSize && "Trying to erase out of bound entry");                     \
+    memmove((void*)(pMoveAdrs), (void*)(pMoveAdrs + sizeof(*(Container))),                            \
+            (pHeader->m_iSize - iIndex - 1) * sizeof(*(Container)));                                  \
+    pHeader->m_iSize -= 1;                                                                            \
 } while(0)
 
 
 /* Verify & Free this vector. */
-#define Vector_Free(Container) do{                                               \
-    if(Container != nullptr)                                                     \
-    {                                                                            \
-        Vector_VerifyRequest((void**)&Container, sizeof(*Container), 0, false);  \
-        free(Vector_GetHeader(Container));                                       \
-    }                                                                            \
-    Container = NULL;                                                            \
+#define Vector_Free(Container) do{                                                   \
+    if((Container) != nullptr)                                                       \
+    {                                                                                \
+        Vector_VerifyRequest((void**)&(Container), sizeof(*(Container)), 0, false);  \
+        free(Vector_GetHeader((Container)));                                         \
+    }                                                                                \
+    (Container) = NULL;                                                              \
 } while(0)
 
 
 /* Set element count as 0 for this vector. */
-#define Vector_Clear(Container) do{                \
-    if(Container != nullptr)                       \
-        Vector_GetHeader(Container)->m_iSize = 0;  \
+#define Vector_Clear(Container) do{                  \
+    if((Container) != nullptr)                       \
+        Vector_GetHeader((Container))->m_iSize = 0;  \
 } while(0)
 
 
 /* Simply put an element @ the end of the vector. */
-#define Vector_PushBack(Container, Data) Vector_Insert(Container, Vector_Len(Container), Data)
+#define Vector_PushBack(Container, Data) Vector_Insert(( Container ), Vector_Len(Container), Data)
 
 
 /* Remove an element from the end of this vector. */
-#define Vector_PopBack(Container) do{                                       \
-    Vector_VerifyRequest((void**)&Container, sizeof(*Container), 0, true);  \
-    VectorHeader_t* pHeader = Vector_GetHeader(Container);                  \
-    assertion(pHeader->m_iSize > 0 && "Empty vector");                      \
-    pHeader->m_iSize -= 1;                                                  \
+#define Vector_PopBack(Container) do{                                           \
+    Vector_VerifyRequest((void**)&(Container), sizeof(*(Container)), 0, true);  \
+    VectorHeader_t* pHeader = Vector_GetHeader((Container));                    \
+    assertion(pHeader->m_iSize > 0 && "Empty vector");                          \
+    pHeader->m_iSize -= 1;                                                      \
 } while(0)
 
 
 /* Increase capacity to hold SIZE elements. */
-#define Vector_Reserve(Container, Size) do{                                    \
-    Vector_AssertInit   ((void**)&Container, sizeof(*Container));              \
-    Vector_VerifyRequest((void**)&Container, sizeof(*Container), 0, false);    \
-    if(Size > 0)                                                               \
-        Vector_GrowToIndex((void**)&Container, sizeof(*Container), Size - 1);  \
+#define Vector_Reserve(Container, Size) do{                                        \
+    Vector_AssertInit   ((void**)&(Container), sizeof(*(Container)));              \
+    Vector_VerifyRequest((void**)&(Container), sizeof(*(Container)), 0, false);    \
+    if(Size > 0)                                                                   \
+        Vector_GrowToIndex((void**)&(Container), sizeof(*(Container)), Size - 1);  \
 } while(0)
 
 
 /* Increase capacity to SIZE elements and set vector size to SIZE. */
-#define Vector_Resize(Container, Size) do{         \
-    Vector_Reserve(Container, Size);               \
-    Vector_GetHeader(Container)->m_iSize = Size;   \
+#define Vector_Resize(Container, Size) do{           \
+    Vector_Reserve((Container), Size);               \
+    Vector_GetHeader((Container))->m_iSize = Size;   \
 } while(0)
 
 
 /* Reallocate and set capacity to vector size. */
-#define Vector_ShrinkToFit(Container) do{                        \
-    Vector_AssertInit  ((void**)&Container, sizeof(*Container)); \
-    Vector_ShrinkToSize((void**)&Container, sizeof(*Container)); \
+#define Vector_ShrinkToFit(Container) do{                            \
+    Vector_AssertInit  ((void**)&(Container), sizeof(*(Container))); \
+    Vector_ShrinkToSize((void**)&(Container), sizeof(*(Container))); \
 } while(0)
 
 
