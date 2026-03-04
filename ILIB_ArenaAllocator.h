@@ -42,6 +42,12 @@ static bool Arena_Initialize(Arena_t* pArena, uint32_t iArenaSize);
 /* Get memory of a fixed size from arena. Returns 0 on failure. */
 static void* Arena_Allocate(Arena_t* pArena, size_t nBytes);
 
+/* Simply return m_pMemory, and marks this arena as fully used. */
+static void* Arena_AllocateAll(Arena_t* pArena);
+
+/* Memset set entire arena's memory and CLEAR this Arena. */
+static void Arena_Memset(Arena_t* pArena, int iData);
+
 /* Mark the arena as empty, but don't free memory. */
 static void Arena_Clear(Arena_t* pArena);
 
@@ -91,6 +97,9 @@ static void* ArenaAllocator_Malloc(ArenaAllocator_t* pArenaAlloc, size_t nBytes)
 
 /* Mark all arenas as empty. Doesn't modify malloc-ed entries in any way. */
 static void ArenaAllocator_Clear(ArenaAllocator_t* pArenaAlloc);
+
+/* Memset() all arenas in this arena allocator and CLEAR all arenas. Mallocs remain untouched. */
+static void ArenaAllocator_Memset(ArenaAllocator_t* pArenaAlloc, int iData);
 
 /* Free all arenas & malloc-ed memories and uninitialize this ArenaAllocator. */
 static void ArenaAllocator_Free(ArenaAllocator_t* pArenaAlloc);
@@ -160,6 +169,24 @@ static void* Arena_Allocate(Arena_t* pArena, size_t nBytes)
     pArena->m_iUsedTill = iBytesUsedAligned + nBytes;
 
     return (void*)iAlignedPointer;
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+static void* Arena_AllocateAll(Arena_t* pArena)
+{
+    pArena->m_iUsedTill = pArena->m_iSize;
+    return pArena->m_pMemory;
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+static void Arena_Memset(Arena_t* pArena, int iData)
+{
+    memset(pArena->m_pMemory, iData, pArena->m_iSize);
+    pArena->m_iUsedTill = 0;
 }
 
 
@@ -309,6 +336,17 @@ static void ArenaAllocator_Clear(ArenaAllocator_t* pArenaAlloc)
     for(int iArenaIndex = 0; iArenaIndex < Vector_Len(pArenaAlloc->m_pArenas); iArenaIndex++)
     {
         Arena_Clear(&pArenaAlloc->m_pArenas[iArenaIndex]);
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+static void ArenaAllocator_Memset(ArenaAllocator_t* pArenaAlloc, int iData)
+{
+    for(int iArenaIndex = 0; iArenaIndex < Vector_Len(pArenaAlloc->m_pArenas); iArenaIndex++)
+    {
+        Arena_Memset(&pArenaAlloc->m_pArenas[iArenaIndex], iData);
     }
 }
 

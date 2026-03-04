@@ -4,7 +4,7 @@
 // by      : INSANE
 // created : 22/02/2026
 //
-// purpose : std::vector<> rip-off in C. Inspired by nothings/stb_ds.h
+// purpose : std::vector<> rip-off in C. Inspired by nothings/stb_ds.h 
 //-------------------------------------------------------------------------
 #ifndef ILIB_VECTOR_H
 #define ILIB_VECTOR_H
@@ -32,7 +32,6 @@ Vector Structure :
 Header holds metadata about this Vector, like size, capacity n stuff.
 
 */
-
 
 
 /* Get VectorHeader_t pointer from given vector. */
